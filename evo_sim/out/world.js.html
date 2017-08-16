@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: world.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: world.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * A world in which blobs live in.
+ */
+class World {
+    /**
+     * Construct a world
+     * @param  {Object}   opt             See Members below for documentation
+     * @param  {number}   opt.width
+     * @param  {number}   opt.height
+     * @param  {number[]} opt.LAYER_SIZES Sizes of the different layer of the neural network that controls the blob
+     * @param  {number}   [opt.population=100]
+     * @param  {number}   [opt.initialSize=20]
+     * @param  {number}   [opt.viewRange=5]
+     * @param  {Function} allDead         What to do when everything dies
+     */
+    constructor(opt, allDead) {
+        /**
+         * Width of the screen on which to draw the world
+         * @constant {number}
+         */
+        this.WIDTH = opt.width;
+        /**
+         * Height of the screen
+         * @constant {number}
+         */
+        this.HEIGHT = opt.height;
+        /**
+         * This function is called when every blob dies.
+         * @type {Function}
+         */
+        this.allDead = allDead;
+        /**
+         * How many blobs to start the simulation with
+         * @constant {number}
+         */
+        this.population = opt.population || 100;
+        
+        /**
+         * Initial size of the blob
+         * @constant {number}
+         */
+        this.initialSize = opt.initialSize || 20;
+        
+        /**
+         * How far the blob can see. A multiplier of the size. Has to be greater than 1.
+         * @constant {number}
+         */
+        this.viewRange = opt.viewRange || 5;
+        
+        /**
+         * All the blobs in the world
+         * @type {Blob[]}
+         */
+        this.blobs = Array(opt.population).fill(0);
+        /**
+         * Quadtree for collision detection
+         * @type {Quadtree}
+         */
+        this.quadtree = new Quadtree({
+            x: 0,
+            y: 0,
+            width: this.WIDTH,
+            height: this.HEIGHT
+        });
+        
+        // initialize blobs
+        this.blobs = this.blobs.map(blob => {
+            return new Blob(
+                random(0, this.WIDTH),
+                random(0, this.HEIGHT),
+                this.initialSize,
+                new Network(opt.LAYER_SIZES),
+                {
+                    viewRange: this.viewRange
+                }
+            );
+        });
+    }
+    
+    
+    /**
+     * TODO: merge this into draw
+     * Call this every time the screen redraws
+     */
+    update() {
+        for (let i = 0; i &lt; blobs.length; i++) {
+            if (!blobs[i]) continue;
+            
+            // feed input into neural network
+            let input = blobs[i].closestBlob(blobs);
+            input = input.concat([blobs[i].x/SCREEN_WIDTH, blobs[i].y/SCREEN_HEIGHT]);
+            let output = blobs[i].network.compute(input);
+            // console.log(output);
+            blobs[i].move((output[0]-0.5) * MOVE_SPEED, (output[1]-0.5) * MOVE_SPEED, true);
+            blobs[i].draw();
+            
+            // TODO: use quadtree for collision detection
+            // check if one blob is eating another. only needs to check blobs starting from i+1
+            for (let j = i+1; j &lt; blobs.length; j++) {
+                if (!blobs[j] || !blobs[i]) continue;
+                // if distance between blobs is less than the combined diameter/2
+                if (Math.sqrt(Math.pow(blobs[i].x-blobs[j].x, 2) + Math.pow(blobs[i].y-blobs[j].y, 2)) &lt; (blobs[i].size+blobs[j].size)/2) {
+                    // blob i ate blob j
+                    if (blobs[i].size > blobs[j].size) {
+                        // increase blobs[i] size
+                        blobs[i].size += blobs[j].size;
+                        // remove blobs[j]
+                        dead.push(blobs[j]);
+                        blobs[j] = undefined;
+                    // blob j ate blob i
+                    } else {
+                        // increase blobs[j] size
+                        blobs[j].size += blobs[i].size;
+                        // remove blobs[i]
+                        dead.push(blobs[i]);
+                        blobs[i] = undefined;
+                    }
+                }
+            }
+            if (blobs[i].checkCollision(blobs)) {
+                
+            }
+            
+            if (dead.length == population) {
+                restartSim();
+                return;
+            }
+            if (!blobs[i]) continue;
+            
+            // if hasn't been moving for KILL_FRAMES, kill the blob
+            if (blobs[i].edgeFrame > KILL_FRAMES) {
+                dead.push(blobs[i]);
+                blobs[i] = undefined;
+            }
+            if (dead.length == population) {
+                this.allDead();
+                return;
+            }
+        }
+    }
+    
+    
+    /**
+     * Draws and moves every blob
+     */
+    draw() {
+        clear();
+        this.quadtree.clear();
+        
+        // add each blob to quadtree
+        this.blobs.forEach(blob => {
+            this.quadtree.insert(blob);
+        });
+        
+        // move and draw each blob
+        this.blobs.forEach(blob => {
+            // what the blob sees
+            let saw = blob.see(this.quadtree);
+            
+            // TODO: turn saw into inputs
+            let input = [];
+            let output = blob.network.compute(input);
+            blob.move(output[0] * TWO_PI, output[1]);
+            
+            blob.draw();
+        });
+    }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BasicBlob.html">BasicBlob</a></li><li><a href="Blob.html">Blob</a></li><li><a href="Quadtree.html">Quadtree</a></li><li><a href="World.html">World</a></li></ul><h3>Global</h3><ul><li><a href="global.html#restartSim">restartSim</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.4</a> on Sat Aug 12 2017 12:49:04 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

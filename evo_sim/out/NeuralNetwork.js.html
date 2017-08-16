@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: NeuralNetwork.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: NeuralNetwork.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>class Network {
+    /**
+     * Create a neural network with many layers of different sizes
+     * @param  {number[]} sizes Array of the different sizes of the layers
+     *//**
+     * Crossover 2 parent networks to form a child network. Both parents must have the same size layers
+     * @param  {Network} parent1 First parent
+     * @param  {Network} parent2 Second parent
+     */
+    constructor(sizes, parent2) {
+        /**
+         * Values of the different nodes
+         * @type {number[][]}
+         */
+        this.values = [];
+        /**
+         * Weights of the network
+         * @type {number[][][]}
+         */
+        this.weights = [];
+        
+        
+        if (Array.isArray(sizes)) {
+            // init values to arrays of zeros
+            sizes.forEach(size => {
+                this.values.push(Array(size).fill(0));
+            });
+            
+            // init weights array starting at 1
+            for (let i = 1; i &lt; sizes.length; i++) {
+                this.weights[i] = [];
+                // each item in this layer
+                for (let j = 0; j &lt; sizes[i]; j++) {
+                    this.weights[i].push([]);
+                    // put the connecting weights to the previous layer
+                    for (let k = 0; k &lt; sizes[i-1]; k++) {
+                        this.weights[i][j].push(Math.random() * 2 - 1);
+                    }
+                }
+            }
+        } else {
+            // crossover
+            let parent1 = sizes;
+            
+            // init values to arrays of zeros
+            parent1.values.forEach(layer => {
+                this.values.push(Array(layer.length).fill(0));
+            });
+            
+            for (let i = 1; i &lt; parent1.weights.length; i++) {
+                if (parent1.weights.length != parent2.weights.length) {
+                    throw new RangeError("Parents must have identical layer sizes");
+                }
+                this.weights[i] = [];
+                // each item in this layer
+                for (let j = 0; j &lt; parent1.weights[i].length; j++) {
+                    if (parent1.weights[i].length != parent2.weights[i].length) {
+                        throw new RangeError("Parents must have identical layer sizes");
+                    }
+                    this.weights[i].push([]);
+                    // choose weight from one of parents
+                    for (let k = 0; k &lt; parent1.weights[i].length; k++) {
+                        let newItem = 0;
+                        if (Math.random() &lt; 0.5) {
+                            newItem = parent1.weights[i][j][k];
+                        } else {
+                            newItem = parent2.weights[i][j][k];
+                        }
+                        
+                        // TODO: mutation?
+                        this.weights[i][j].push(newItem);
+                    }
+                }
+            }
+        }
+        
+    }
+    
+    
+    
+    /**
+     * Compute the values for the network
+     * @param  {number[]} input Input to the network
+     * @return {number[]}       Output of the network
+     */
+    compute(input) {
+        if (input.length != this.values[0].length) {
+            console.log(input);
+            console.log(this.values);
+            throw new RangeError('Input to compute must be of the same length as the first layer of the neural network');
+        }
+        
+        this.values[0] = input;
+        // propagate the input through the network
+        for (let layer = 1; layer &lt; this.weights.length; layer++) {
+            // for every node in this layer
+            for (let node = 0; node &lt; this.weights[layer].length; node++) {
+                // multiply previous layer nodes by weights in this array and set to this node's value
+                for (let weight = 0; weight &lt; this.weights[layer][node].length; weight++) {
+                    this.values[layer][node] = this.sigmoid(this.values[layer - 1][weight] * this.weights[layer][node][weight]);
+                }
+            }
+        }
+        
+        // return last layer
+        return this.values[this.values.length - 1];
+    }
+    
+    
+    
+    /**
+     * Sigmoid function
+     * @param  {number} value Input to the sigmoid function
+     * @return {number}       Output of sigmoid
+     * @private
+     */
+    sigmoid(value) {
+        return 1 / (1 + Math.pow(Math.E, -value));
+    }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BasicBlob.html">BasicBlob</a></li><li><a href="Blob.html">Blob</a></li><li><a href="Network.html">Network</a></li><li><a href="World.html">World</a></li></ul><h3>Global</h3><ul><li><a href="global.html#init">init</a></li><li><a href="global.html#restartSim">restartSim</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.4</a> on Fri Aug 11 2017 11:48:15 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
