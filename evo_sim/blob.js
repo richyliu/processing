@@ -17,7 +17,7 @@ class Blob extends BasicBlob {
         
         /**
          * Neural network that controls the blob
-         * @type {Network}
+         * @constant {Network}
          */
         this.network = network;
         
@@ -28,10 +28,10 @@ class Blob extends BasicBlob {
         this.edgeFrame = 0;
         
         /**
-         * The diameter of the circle the blob can see in pixels
-         * @type {number}
+         * The diameter of the circle the blob can see as a multiplier of the size
+         * @constant {number}
          */
-        this.viewRange = (opt.viewRange || 5) * size;
+        this.viewRange = opt.viewRange || 5;
     }
     
     
@@ -45,7 +45,7 @@ class Blob extends BasicBlob {
         noFill();
         stroke(0);
         
-        ellipse(this.x, this.y, this.viewRange, this.viewRange);
+        ellipse(this.x, this.y, this.viewRange * this.size, this.viewRange * this.size);
     }
     
     
@@ -86,14 +86,36 @@ class Blob extends BasicBlob {
     /**
      * Looks at blobs in view range.
      * @param  {Quadtree} quadtree Quadtree to look at
-     * @return {Blob[]}            Blobs this blob can see
+     * @return {number[]}          Angle to blob, distance, and bigger than this
+     *                             (0.99 for true, 0.01 for false)
      */
     see(quadtree) {
-        return quadtree.retrieve({
+        let closestBlob = null;
+        let closestBlobDistance = 1000000;
+        
+        // possible collisions
+        quadtree.retrieve({
             x: this.x,
             y: this.y,
-            radius: this.viewRange/2
+            size: this.viewRange*this.size
+        }).forEach(blob => {
+            let dis = Math.sqrt(Math.pow(blob.x-this.x, 2) + Math.pow(blob.y-this.y, 2));
+            if (dis < closestBlobDistance && dis < (blob.viewRange+this.size)/2 && blob != this) {
+                closestBlobDistance = dis;
+                closestBlob = blob;
+            }
         });
+        
+        if (closestBlob) {
+            let arr = new Array(3);
+            arr[0] = Math.atan2(closestBlob.x-this.x, closestBlob.y-this.y) / TWO_PI;
+            arr[1] = closestBlobDistance;
+            arr[2] = closestBlob.size > this.size ? 0.99 : 0.01;
+            
+            return arr;
+        } else {
+            return [0.01, 0.01, 0.01];
+        }
     }
     
     
@@ -102,22 +124,21 @@ class Blob extends BasicBlob {
      * Check if this blob was eaten by another blob. Only eats when half of
      * smaller blob is within bigger blob.
      * @param  {Quadtree} quadtree Quadtree to check for collisions
-     * @return {Blob}               The blobs that ate this blob. Null if no eating
+     * @return {Blob}              The blobs that ate this blob. Null if no eating
      */
     checkCollision(quadtree) {
+        let closestBlob = null;
+        let closestBlobDistance = 100000;
+        
         // blobs that might be able to eat this blob
-        quadtree.retrieve({
-            x: this.x,
-            y: this.y,
-            radius: 1 // smallest circle possible
-        }).forEach(blob => {
-            // only return if blob is bigger
-            if (blob.size > this.size) {
-                return blob;
+        quadtree.retrieve(this).forEach(blob => {
+            let dis = Math.sqrt(Math.pow(blob.x-this.x, 2) + Math.pow(blob.y-this.y, 2));
+            if (dis < closestBlobDistance && dis < (blob.size+this.size)/2 && blob != this) {
+                closestBlobDistance = dis;
+                closestBlob = blob;
             }
         });
         
-        // null if no blob
-        return null;
+        return closestBlob;
     }
 }
