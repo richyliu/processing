@@ -27,13 +27,15 @@ function setup() {
                 1. direction to move in terms of TWO_PI
                 2. how far to move
          */
-        population: 20,
+        population: 30,
         initialSize: 20,
         viewRange: 3,
         elite: 0.1,
         moveSpeed: 30,
         foodRatio: 5,
-        foodSize: 10
+        foodSize: 10,
+        stillFrameLimit: 500,
+        noDraw: false
     });
     
     window.world = world;

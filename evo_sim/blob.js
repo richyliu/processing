@@ -22,10 +22,20 @@ class Blob extends BasicBlob {
         this.network = network;
         
         /**
-         * How many frames in a row this blob has stayed on an edge
+         * How many frames in a row this blob has stayed "still" (not moving 100px)
          * @type {number}
          */
-        this.edgeFrame = 0;
+        this.stillFrame = 0;
+        /**
+         * X coord of the still position
+         * @type {number}
+         */
+        this.stillX = -1;
+        /**
+         * Y coord of the still position
+         * @type {number}
+         */
+        this.stillY = -1;
         
         /**
          * The diameter of the circle the blob can see as a multiplier of the size
@@ -42,10 +52,16 @@ class Blob extends BasicBlob {
      */
     draw() {
         super.draw();
+        
+        // draw view range
         noFill();
         stroke(0);
-        
         ellipse(this.x, this.y, this.viewRange * this.size, this.viewRange * this.size);
+        
+        // draw stillFrame
+        fill(255);
+        noStroke();
+        ellipse(this.x, this.y, this.stillFrame/500 * this.size)
     }
     
     
@@ -75,9 +91,14 @@ class Blob extends BasicBlob {
             this.y = 0;
         }
         
-        // add to edgeFrame if on an edge
-        if (this.x === 0 || this.y === 0 || this.x == SCREEN_WIDTH || this.y == SCREEN_HEIGHT) {
-            this.edgeFrame++;
+        // add to stillFrame if staying still
+        let dis = this.rms(this.x-this.stillX, this.y-this.stillY);
+        if (dis > 100) {
+            this.stillFrame = 0;
+            this.stillX = this.x;
+            this.stillY = this.y;
+        } else if (dis < 100) {
+            this.stillFrame++;
         }
     }
     
@@ -99,8 +120,9 @@ class Blob extends BasicBlob {
             y: this.y,
             size: this.viewRange*this.size
         }).forEach(blob => {
-            let dis = Math.sqrt(Math.pow(blob.x-this.x, 2) + Math.pow(blob.y-this.y, 2));
-            if (dis < closestBlobDistance && dis < (blob.viewRange+this.size)/2 && blob != this) {
+            let dis = this.rms(blob.x-this.x, blob.y-this.y);
+            // only check for live blobs, not food
+            if (blob instanceof Blob && dis < closestBlobDistance && dis < (blob.viewRange+this.size)/2 && blob != this) {
                 closestBlobDistance = dis;
                 closestBlob = blob;
             }
@@ -124,21 +146,36 @@ class Blob extends BasicBlob {
      * Check if this blob was eaten by another blob. Only eats when half of
      * smaller blob is within bigger blob.
      * @param  {Quadtree} quadtree Quadtree to check for collisions
+     * @param  {Blob[]}   dead     List of dead blobs to check to make sure no
+     *                             duplicate kills.
      * @return {Blob}              The blobs that ate this blob. Null if no eating
      */
-    checkCollision(quadtree) {
+    checkCollision(quadtree, dead) {
         let closestBlob = null;
         let closestBlobDistance = 100000;
         
         // blobs that might be able to eat this blob
         quadtree.retrieve(this).forEach(blob => {
-            let dis = Math.sqrt(Math.pow(blob.x-this.x, 2) + Math.pow(blob.y-this.y, 2));
-            if (dis < closestBlobDistance && dis < (blob.size+this.size)/2 && blob != this) {
+            let dis = this.rms(blob.x-this.x, blob.y-this.y);
+            if (dis < closestBlobDistance && dis < (blob.size+this.size)/2 && !dead.includes(blob) && blob != this) {
                 closestBlobDistance = dis;
                 closestBlob = blob;
             }
         });
         
         return closestBlob;
+    }
+    
+    
+    
+    /**
+     * Root mean squared. Useful for Pythagorean's theorm and other calculations.
+     * Formula: sqrt(a^2 + b^2)
+     * @param  {number} a First number
+     * @param  {number} b Second number
+     * @return {number}   Root mean squared
+     */
+    rms(a, b) {
+        return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
     }
 }

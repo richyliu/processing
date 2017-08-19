@@ -15,6 +15,8 @@ class World {
      * @param  {number}   [opt.moveSpeed=20]
      * @param  {number}   [opt.foodRatio=5] Amount of food per blob
      * @param  {number}   [opt.foodSize=10]
+     * @param  {number}   [opt.stillFrameLimit=200]
+     * @param  {number}   [opt.noDraw=false]
      */
     constructor(opt) {
         /**
@@ -57,6 +59,21 @@ class World {
          * @type {number}
          */
         this.foodSize = opt.foodSize || 10;
+        /**
+         * How many frames to wait before killing "still" blob.
+         * @type {number}
+         */
+        this.stillFrameLimit = opt.stillFrameLimit || 200;
+        /**
+         * Run only the simulation and don't draw anything
+         * @type {Boolean}
+         */
+        this.noDraw = false;
+        /**
+         * Waiting on allDead for a save progress
+         * @type {Boolean}
+         */
+        this.pendingSaveProgress = false;
         
         /**
          * All the blobs in the world
@@ -118,7 +135,7 @@ class World {
         
         // draw the food
         this.food.forEach(f => {
-            if (f) {
+            if (f && !this.noDraw) {
                 f.draw();
                 this.quadtree.insert(f);
             }
@@ -139,16 +156,22 @@ class World {
                 let output = blob.network.compute(input);
                 blob.move(output[0] * TWO_PI, output[1] * this.moveSpeed / blob.size);
                 
-                let collidedWith = blob.checkCollision(this.quadtree);
+                // kill blob if still after too many frame
+                if (blob.stillFrame > this.stillFrameLimit) {
+                    this.dead.push(blob);
+                    this.blobs[index] = undefined;
+                }
+                
+                let collidedWith = blob.checkCollision(this.quadtree, this.dead);
                 if (collidedWith) {
                     // food eaten
                     if (!(collidedWith instanceof Blob)) {
-                        blob.size += collidedWith.size;
+                        blob.size = this.rms(collidedWith.size, blob.size);
                         this.food[this.food.indexOf(collidedWith)] = undefined;
                     // blob dies
                     } else if (collidedWith.size > blob.size) {
                         // add size to bigger blob
-                        collidedWith.size += blob.size;
+                        collidedWith.size = this.rms(collidedWith.size, blob.size);
                         // add blob to dead list
                         this.dead.push(blob);
                         // remove from blobs list
@@ -156,14 +179,14 @@ class World {
                     // collidedWith dies
                     } else {
                         // add size to bigger blob
-                        blob.size += collidedWith.size;
+                        blob.size = this.rms(collidedWith.size, blob.size);
                         // add blob to dead list
                         this.dead.push(collidedWith);
                         // remove from blobs list
                         this.blobs[this.blobs.indexOf(collidedWith)] = undefined;
                     }
                 }
-                blob.draw();
+                if (!this.noDraw) blob.draw();
                 
                 if (this.dead.length == this.population) {
                     this.allDead();
@@ -219,6 +242,8 @@ class World {
         }
         
         this.dead = [];
+        
+        if (this.pendingSaveProgress) saveProgressMain();
     }
     
     
@@ -235,5 +260,60 @@ class World {
                 this.foodSize
             );
         });
+    }
+    
+    
+    
+    /**
+     * Saves the blobs on the next allDead into localStorage for use later.
+     */
+    saveProgress() {
+        console.log('Saving progress on next allDead. Please wait.');
+        this.pendingSaveProgress = false;
+    }
+    
+    
+    
+    /**
+     * Main code of saveProgress
+     * @private
+     */
+    saveProgressMain() {
+        this.pendingSaveProgress = false;
+        noLoop();
+        
+        console.log('Saving neural networks...');
+        localStorage.setItem('save', JSON.stringify(this.blobs));
+        console.log('Progress saved!');
+    }
+    
+    
+    
+    /**
+     * Load progress from localStorage. Starts with call to allDead
+     * @param  {string} [name=save] Name of the localStorage item to load progress from
+     */
+    loadProgress(name='save') {
+        noLoop();
+        this.blobs = [];
+        this.food = [];
+        
+        console.log('Loading neural networks...');
+        // TODO: make this work! stringify does not preserve class instance data
+        this.dead = JSON.parse(localStorage.getItem('save'));
+        console.log('Loaded!');
+    }
+    
+    
+    
+    /**
+     * Root mean squared. Useful for Pythagorean's theorm and other calculations.
+     * Formula: sqrt(a^2 + b^2)
+     * @param  {number} a First number
+     * @param  {number} b Second number
+     * @return {number}   Root mean squared
+     */
+    rms(a, b) {
+        return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
     }
 }
