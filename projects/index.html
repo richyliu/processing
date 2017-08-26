@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Projects</title>
+    </head>
+    <body>
+        <script src="../min/p5.min.js"></script>
+        <script src="../min/jquery-3.2.1.min.js"></script>
+        <script src="../min/quadtree.min.js"></script>
+        <script src="../min/Deserialize.js"></script>
+        <script src="../min/NeuralNetwork.js"></script>
+        <script>
+            let match = window.location.href.match(/\?(.+)/) || ['', 'evo_sim'];
+            
+            $.get(`${match[1]}/manifest.json`, manifest => {
+                // load scripts
+                manifest.files.forEach(file => {
+                    $.getScript(`${match[1]}/${file}`, () => {
+                        // load p5 once main has been loaded
+                        if (typeof window.mainCode == 'function') {
+                            new p5(instance => {
+                                window.p = instance;
+                                window.mainCode();
+                            });
+                        }
+                    }).fail(() => {
+                        console.error(`Failed to load ${match[1]}/${file}!`);
+                    });
+                });
+            }).fail(() => {
+                console.error(`Failed to load ${match[1]}/manifest.json!`);
+            });
+        </script>
+    </body>
+</html>

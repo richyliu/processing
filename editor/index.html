@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Editor</title>
+        <link rel="stylesheet" href="codemirror.css">
+        <link rel="stylesheet" href="cm-s-material.css">
+        <style media="screen">
+            #header {
+                margin: 10px;
+            }
+            select, button {
+                font-size: 12pt;
+            }
+            .CodeMirror {
+                font-size: 12pt;
+                height: 600px;
+            }
+            #editor-wrapper {
+                width: 50%;
+                float: left;
+            }
+            #output-wrapper {
+                width: 50%;
+                height: 600px;
+                float: right;
+                padding-top: 43px;
+            }
+            #output {
+                width: 100%;
+                height: 100%;
+                border-style: solid;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="editor-wrapper">
+            <div id="header">
+                <select class="dropdown" id="project"></select>
+                <select class="dropdown" id="file"></select>
+                <button id="save">Save</button>
+                <button id="pull">Pull from Github</button>
+                <button id="run-code">Run code</button>
+            </div>
+            <textarea id="editor"></textarea>
+        </div>
+        <div id="output-wrapper"></div>
+        
+        
+        <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
+        <script src="../min/jquery-3.2.1.min.js"></script>
+        <script src="../min/p5.min.js"></script>
+        
+        <script src="codemirror.js"></script>
+        <script src="addon/comment/comment.js"></script>
+        <script src="addon/comment/continuecomment.js"></script>
+        <script src="addon/edit/matchbrackets.js"></script>
+        <script src="addon/edit/closebrackets.js"></script>
+        <script src="javascript.js"></script>
+        
+        <script src="../min/jquery-3.2.1.min.js"></script>
+        <script src="../min/quadtree.min.js"></script>
+        <script src="../min/Deserialize.js"></script>
+        <script src="../min/NeuralNetwork.js"></script>
+        
+        <script src="main.js"></script>
+    </body>
+</html>
