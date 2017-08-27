@@ -2,7 +2,7 @@
  * A blob controlled by a network
  * @extends BasicBlob
  */
-class Blob extends BasicBlob {
+let Blob = class extends BasicBlob {
     /**
      * Creates a blob.
      * @param  {number} x        X position of blob

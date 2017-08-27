@@ -4,5 +4,10 @@
         "blob.js",
         "world.js",
         "main.js"
+    ],
+    "globals": [
+        "Blob",
+        "BasicBlob",
+        "World"
     ]
 }

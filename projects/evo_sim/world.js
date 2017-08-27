@@ -1,7 +1,7 @@
 /**
  * A world in which blobs live in.
  */
-class World {
+let World = class {
     /**
      * Construct a world
      * @param  {Object}   opt             See Members below for documentation

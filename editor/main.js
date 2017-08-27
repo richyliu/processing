@@ -12,51 +12,10 @@ let ref = firebase.database().ref();
 let password;
 let auth = '?client_id=d036f9ed0ff4ffe05f92&client_secret=94968fd4157d632abbe1b0d5d2de52ecaa077f09';
 // a list of all the files and folders
-let directory = {
-    'evo_sim': [
-        'main',
-        'world',
-        'blob',
-        'basicblob'
-    ],
-    'battleship': [
-        'main'
-    ],
-    'pianojs': [
-        'main'
-    ],
-    'polytopia': [
-        'main'
-    ],
-    'scrabble': [
-        'scrabble'
-    ]
-};
+let directory = {};
+// list of globals that need to be cleared on each 
+let globals = {};
 
-
-// delete this later
-for (let folder in directory) {
-    $('#project').append(`<option>${folder}</option>`);
-}
-
-// initialize directory
-// get('https://api.github.com/repos/richyliu/processing/contents' + auth, data => {
-//     data.forEach(directory => {
-//         if (directory.type == 'dir') {
-//             $('#project').append(`<option>${directory.name}</option>`);
-//             directory[directory.name] = [];
-//             get(`https://api.github.com/repos/richyliu/processing/contents/${directory.name}${auth}`, files => {
-//                 files.forEach(file => {
-//                     // matches filename ending with .js
-//                     let match = file.name.match(/^(.+)\.js/);
-//                     if (match) {
-//                         directory[directory.name].push(match[1]);
-//                     }
-//                 });
-//             });
-//         }
-//     });
-// });
 
 // setup code mirror
 let cm = CodeMirror.fromTextArea($('#editor')[0], {
@@ -65,16 +24,16 @@ let cm = CodeMirror.fromTextArea($('#editor')[0], {
     indentUnit: 4,
     lineNumbers: true,
     extraKeys: {
-        'Ctrl-S': save,
-        'Cmd-S': save,
         'Ctrl-/': cm => {
             cm.toggleComment();
         },
         'Cmd-/': cm => {
             cm.toggleComment();
         },
-        'Ctrl-B': runCode,
-        'Cmd-B': runCode,
+        'Ctrl-S': save,
+        'Cmd-S': save,
+        'Ctrl-R': runCode,
+        'Ctrl-1': switchScreen,
     },
     continueComments: true
 });
@@ -113,10 +72,24 @@ $('#pull').click(() => {
     }
 });
 
-// run code in iframe
+// run code
 $('#run-code').click(runCode);
 
+// save code
 $('#save').click(save);
+
+// pause code
+$('#pause').click(pause);
+
+// switch between output and editor
+$(document).keydown(e => {
+    if (e.which == 49 && e.ctrlKey) {
+        switchScreen();
+    }
+    if (e.which == 80 && e.ctrlKey) {
+        pause();
+    }
+});
 
 
 
@@ -127,10 +100,19 @@ firebase.auth().onAuthStateChanged(user => {
         let project = localStorage.getItem('project') || 'evo_sim';
         let file = localStorage.getItem('file') || 'main';
         
-        updateList(project);
+        // initialize directory
+        initDirectory(() => {
+            updateList(project);
+            $('#project')[0].value = project;
+            $('#file')[0].value = file;
+            for (let folder in directory) {
+                $.get(`https://raw.githubusercontent.com/richyliu/processing/gh-pages/projects/${folder}/manifest.json${auth}`, data => {
+                    globals[folder] = JSON.parse(data).globals;
+                });
+            }
+        });
+        
         loadFile(project, file);
-        $('#project')[0].value = project;
-        $('#file')[0].value = file;
     } else {
         // not logged in
         // prompt the user for the password
@@ -173,22 +155,34 @@ function save() {
  * Run the current project in the iframe
  */
 function runCode() {
+    switchScreen();
     save();
+    window.mainCode = null;
+    $('#output').html('');
+    window.p = null;
+    let project = $('#project')[0].value;
     
-    directory[$('#project')[0].value].forEach(file => {
-        ref.child($('#project')[0].value).child(file).once('value', snapshot => {
-            eval(window.atob(snapshot.val()));
-            
+    globals[project].forEach(global => {
+        window[global] = null;
+    });
+    
+    let allFiles = {};
+    
+    directory[project].forEach(file => {
+        ref.child(project).child(file).once('value', snapshot => {
+            allFiles[file] = snapshot.val();
             // last file
-            if (typeof window.mainCode == 'function') {
-                $('#output-wrapper').html('');
-                window.mainCode = null;
-                window.p = null;
+            if (Object.keys(allFiles).length == directory[project].length) {
+                // execute all the code in the correct order
+                directory[project].forEach(fileName => {
+                    $.globalEval(window.atob(allFiles[fileName]));
+                });
+                
+                // create p5 instance
                 new p5(instance => {
-                    console.log('instiating p5');
                     window.p = instance;
                     window.mainCode();
-                }, $('#output-wrapper')[0]);
+                }, $('#output')[0]);
             }
         });
     });
@@ -217,23 +211,57 @@ function updateList(project) {
 
 
 /**
- * Get JSON from a url
- * @param  {string}   url      Source url
- * @param  {Function} callback Data passed in as first argument
+ * Pause the p5 instance
  */
-function get(url, callback) {
-    var request = new XMLHttpRequest();
-    request.open('GET', url, true);
+function pause() {
+    if (p._loop) {
+        p.noLoop();
+    } else {
+        p.loop();
+    }
+}
 
-    request.onload = () => {
-        if (request.status >= 200 && request.status < 400) {
-            // Success!
-            let data = JSON.parse(request.responseText);
-            callback(data);
-        } else {
-            // We reached our target server, but it returned an error
-            console.error(request);
-        }
-    };
-    request.send();
+
+
+/**
+ * Toggle between the editor and the output
+ */
+function switchScreen() {
+    $('#editor-wrapper').toggle();
+    $('#output-wrapper').toggle();
+}
+
+
+
+/**
+ * Initialize directory from Github
+ * @param  {Function} callback Called once everything finished
+ */
+function initDirectory(callback) {
+    let expectedTotal = 0;
+    let total = 0;
+    $.get('https://api.github.com/repos/richyliu/processing/contents/projects' + auth, data => {
+        data.forEach(folder => {
+            if (folder.type == 'dir') {
+                expectedTotal++;
+                $('#project').append(`<option>${folder.name}</option>`);
+                directory[folder.name] = [];
+                
+                // load files
+                $.get(`https://api.github.com/repos/richyliu/processing/contents/projects/${folder.name}${auth}`, files => {
+                    total++;
+                    files.forEach(file => {
+                        // matches filename ending with .js
+                        let match = file.name.match(/^(.+)\.js$/);
+                        if (match) {
+                            directory[folder.name].push(match[1]);
+                        }
+                    });
+                    if (total == expectedTotal) {
+                        callback();
+                    }
+                });
+            }
+        });
+    });
 }

@@ -1,7 +1,7 @@
 /**
  * Like a blob, but cannot move and lacks a network
  */
-class BasicBlob {
+let BasicBlob = class {
     /**
      * Makes a basic blob.
      * @param  {number} x        X position of blob
@@ -42,4 +42,4 @@ class BasicBlob {
         p.noStroke();
         p.ellipse(this.x + x, this.y + x, this.size, this.size);
     }
-}
+};
