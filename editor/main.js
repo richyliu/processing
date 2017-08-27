@@ -59,7 +59,7 @@ function dropdownChange() {
 // pulls data from github to overwrite current file
 $('#pull').click(() => {
     if (confirm('Are you sure you want to overwrite the current file?')) {
-        get(`https://api.github.com/repos/richyliu/processing/contents/projects/${$('#project')[0].value}/${$('#file')[0].value}.js${auth}`, data => {
+        $.get(`https://api.github.com/repos/richyliu/processing/contents/projects/${$('#project')[0].value}/${$('#file')[0].value}.js${auth}`, data => {
             // data is in base64
             cm.setValue(window.atob(data.content));
             

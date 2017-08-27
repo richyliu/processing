@@ -2,7 +2,7 @@
  * A blob controlled by a network
  * @extends BasicBlob
  */
-let Blob = class extends BasicBlob {
+window.Blob = class extends BasicBlob {
     /**
      * Creates a blob.
      * @param  {number} x        X position of blob

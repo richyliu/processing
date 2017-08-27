@@ -1,7 +1,7 @@
 /**
  * Like a blob, but cannot move and lacks a network
  */
-let BasicBlob = class {
+window.BasicBlob = class {
     /**
      * Makes a basic blob.
      * @param  {number} x        X position of blob
