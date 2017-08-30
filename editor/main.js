@@ -33,9 +33,10 @@ let cm = CodeMirror.fromTextArea($('#editor')[0], {
         'Ctrl-S': save,
         'Cmd-S': save,
         'Ctrl-R': runCode,
-        'Ctrl-1': switchScreen,
+        'Ctrl-`': switchScreen,
     },
-    continueComments: true
+    continueComments: true,
+    scrollbarStyle: 'overlay'
 });
 
 
@@ -83,10 +84,10 @@ $('#pause').click(pause);
 
 // switch between output and editor
 $(document).keydown(e => {
-    if (e.which == 49 && e.ctrlKey) {
+    if (e.which == 192 && e.ctrlKey) {
         switchScreen();
     }
-    if (e.which == 80 && e.ctrlKey) {
+    if (e.which == 69 && e.ctrlKey) {
         pause();
     }
 });
@@ -216,6 +217,7 @@ function updateList(project) {
 function pause() {
     if (p._loop) {
         p.noLoop();
+        switchScreen();
     } else {
         p.loop();
     }
