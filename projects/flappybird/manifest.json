@@ -1,0 +1,12 @@
+{
+    "files": [
+        "bird.js",
+        "pipe.js",
+        "world.js",
+        "main.js"
+    ],
+    "globals": [
+        "World",
+        "Bird"
+    ]
+}
