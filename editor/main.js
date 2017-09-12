@@ -87,7 +87,7 @@ $(document).keydown(e => {
     if (e.which == 192 && e.ctrlKey) {
         switchScreen();
     }
-    if (e.which == 69 && e.ctrlKey) {
+    if (e.which == 66 && e.ctrlKey) {
         pause();
     }
 });
