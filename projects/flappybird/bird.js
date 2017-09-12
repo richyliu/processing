@@ -1,7 +1,7 @@
 /**
  * Bird that flies in the world
  */
-class Bird {
+window.Bird = class {
     /**
      * Create a bird
      * @param  {Number} x X position to draw bird
@@ -57,4 +57,4 @@ class Bird {
     jump(jumpAmt=-5) {
         this.dy = jumpAmt;
     }
-}
+};

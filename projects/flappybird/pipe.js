@@ -1,7 +1,7 @@
 /**
  * Pipe that birds have to avoid
  */
-class Pipe {
+window.Pipe = class {
     /**
      * Create a new pipe
      * @param  {Number} x      X position of pipe
@@ -61,4 +61,4 @@ class Pipe {
         // bottom half
         p.rect(this.x, this.Y+this.GAP, this.x+this.WIDTH, this.HEIGHT);
     }
-}
+};

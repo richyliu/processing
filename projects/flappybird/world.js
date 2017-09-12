@@ -1,4 +1,4 @@
-class World {
+window.World = class {
     constructor(numBirds, screenWidth, screenHeight) {
         /**
          * X position of all the birds
@@ -132,4 +132,4 @@ class World {
     respawnBirds() {
         
     }
-}
+};
