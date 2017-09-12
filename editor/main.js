@@ -32,7 +32,7 @@ let cm = CodeMirror.fromTextArea($('#editor')[0], {
         },
         'Ctrl-S': save,
         'Cmd-S': save,
-        'Ctrl-R': runCode,
+        'Ctrl-I': runCode,
         'Ctrl-`': switchScreen,
     },
     continueComments: true,
