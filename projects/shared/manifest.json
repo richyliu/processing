@@ -1,0 +1,8 @@
+{
+    "files": [
+        "NeuralNetwork"
+    ],
+    "globals": [
+        "Network"
+    ]
+}
