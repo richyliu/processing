@@ -108,7 +108,7 @@ firebase.auth().onAuthStateChanged(user => {
             $('#file')[0].value = file;
             for (let folder in directory) {
                 $.get(`https://raw.githubusercontent.com/richyliu/processing/gh-pages/projects/${folder}/manifest.json${auth}`, data => {
-                    globals[folder] = JSON.parse(data).globals;
+                    globals[folder] = JSON.parse(data).globals || [];
                 });
             }
         });

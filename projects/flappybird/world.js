@@ -1,4 +1,13 @@
+/**
+ * Simulation that breeds networks to play Flappy Bird
+ */
 window.World = class {
+    /**
+     * Create a new world.
+     * @param  {Number} numBirds     Number of birds in a population
+     * @param  {Number} screenWidth  Width of the screen
+     * @param  {Number} screenHeight Height of the screen
+     */
     constructor(numBirds, screenWidth, screenHeight) {
         /**
          * X position of all the birds
@@ -7,7 +16,7 @@ window.World = class {
         this.birdX = 150;
         /**
          * Space between pipes
-         * @type {Number}
+         * @constant {Number}
          */
         this.pipeFrequency = 300;
         /**
@@ -17,28 +26,46 @@ window.World = class {
         this.closestPipe = 0;
         /**
          * Width of the screen
-         * @type {Number}
+         * @constant {Number}
          */
         this.WIDTH = screenWidth;
         /**
          * Height of the screen
-         * @type {Number}
+         * @constant {Number}
          */
         this.HEIGHT = screenHeight;
         /**
          * Height of the gap between top and bottom pipe
-         * @type {Number}
+         * @constant {Number}
          */
         this.GAP_SIZE = 120;
         /**
          * How wide each pipe is
-         * @type {Number}
+         * @constant {Number}
          */
         this.PIPE_WIDTH = 60;
+        /**
+         * Part of the population to use when breeding the next generation
+         * @constant {Number}
+         */
+        this.ELITE = 0.05;
         
+        /**
+         * Birds that are currently alive. Dead birds are set to undefined.
+         * @type {Bird[]}
+         */
         this.birds = [];
+        /**
+         * Onscreen pipes
+         * @type {Pipe[]}
+         */
         this.pipes = [];
+        /**
+         * Birds that are dead
+         * @type {Bird[]}
+         */
         this.dead = [];
+        
         
         Array(numBirds).fill(0).forEach(() => {
             this.birds.push(new Bird(this.birdX, p.random(0, 600)));
@@ -107,6 +134,11 @@ window.World = class {
                 }
             }
         });
+        
+        // respawn birds once all are dead
+        if (this.dead.length == this.birds.length) {
+            this.respawnBirds();
+        }
     }
     
     
@@ -130,6 +162,19 @@ window.World = class {
      * Called once all birds are dead. Rebreeds and spawns new birds
      */
     respawnBirds() {
+        this.dead.forEach(bird => {
+            
+        });
         
+        // life cycle of birds
+        
+        // all birds start out at a random y position
+        // they flap and get added to the dead list once dead
+        // once all birds are dead this generation is over; a new one is created
+        
+        // take ELITE percent of population
+        
+        // breed them with one another to create a new population/generation
+        // repeat
     }
 };
