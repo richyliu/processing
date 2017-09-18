@@ -4,24 +4,24 @@
 window.BasicBlob = class {
     /**
      * Makes a basic blob.
-     * @param  {number} x        X position of blob
-     * @param  {number} y        Y position of blob
-     * @param  {number} size     Diameter of food in pixels
+     * @param  {Number} x        X position of blob
+     * @param  {Number} y        Y position of blob
+     * @param  {Number} size     Diameter of food in pixels
      */
     constructor(x, y, size) {
         /**
          * X position of blob
-         * @type {number}
+         * @type {Number}
          */
         this.x = x;
         /**
          * Y position of blob
-         * @type {number}
+         * @type {Number}
          */
         this.y = y;
         /**
          * Diameter of blob in pixels
-         * @type {number}
+         * @type {Number}
          */
         this.size = size;
         /**
@@ -34,8 +34,8 @@ window.BasicBlob = class {
     
     /**
      * Draws the blob onto the screen.
-     * @param  {number} x Offset to draw from
-     * @param  {number} y Offset to draw from
+     * @param  {Number} x Offset to draw from
+     * @param  {Number} y Offset to draw from
      */
     draw(x, y) {
         p.fill(this.color);

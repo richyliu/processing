@@ -5,65 +5,65 @@ window.World = class {
     /**
      * Construct a world
      * @param  {Object}   opt             See Members below for documentation
-     * @param  {number}   opt.width
-     * @param  {number}   opt.height
+     * @param  {Number}   opt.width
+     * @param  {Number}   opt.height
      * @param  {number[]} opt.LAYER_SIZES Sizes of the different layer of the neural network that controls the blob
-     * @param  {number}   [opt.population=100] Non of the settings below may be zero, or any other falsy value.
-     * @param  {number}   [opt.initialSize=20]
-     * @param  {number}   [opt.viewRange=5]
-     * @param  {number}   [opt.elite=0.1]
-     * @param  {number}   [opt.moveSpeed=20]
-     * @param  {number}   [opt.foodRatio=5] Amount of food per blob
-     * @param  {number}   [opt.foodSize=10]
-     * @param  {number}   [opt.stillFrameLimit=200]
-     * @param  {number}   [opt.noDraw=false]
-     * @param  {number}   [opt.offsetX=0]
-     * @param  {number}   [opt.offsetY=0]
+     * @param  {Number}   [opt.population=100] Non of the settings below may be zero, or any other falsy value.
+     * @param  {Number}   [opt.initialSize=20]
+     * @param  {Number}   [opt.viewRange=5]
+     * @param  {Number}   [opt.elite=0.1]
+     * @param  {Number}   [opt.moveSpeed=20]
+     * @param  {Number}   [opt.foodRatio=5] Amount of food per blob
+     * @param  {Number}   [opt.foodSize=10]
+     * @param  {Number}   [opt.stillFrameLimit=200]
+     * @param  {Number}   [opt.noDraw=false]
+     * @param  {Number}   [opt.offsetX=0]
+     * @param  {Number}   [opt.offsetY=0]
      */
     constructor(opt) {
         /**
          * Width of the screen on which to draw the world
-         * @constant {number}
+         * @constant {Number}
          */
         this.WIDTH = opt.width;
         /**
          * Height of the screen
-         * @constant {number}
+         * @constant {Number}
          */
         this.HEIGHT = opt.height;
         /**
          * How many blobs to start the simulation with
-         * @constant {number}
+         * @constant {Number}
          */
         this.population = opt.population || 100;
         /**
          * Initial size of the blob
-         * @constant {number}
+         * @constant {Number}
          */
         this.initialSize = opt.initialSize || 20;
         /**
          * How far the blob can see. A multiplier of the size. Has to be greater than 1.
-         * @constant {number}
+         * @constant {Number}
          */
         this.viewRange = opt.viewRange || 5;
         /**
          * Percentage of population to use to breed the next generation.
-         * @constant {number}
+         * @constant {Number}
          */
         this.elite = opt.elite || 0.1;
         /**
          * How many pixels the blobs can move maximum on each draw. It is divided by the size
-         * @constant {number}
+         * @constant {Number}
          */
         this.moveSpeed = opt.moveSpeed || 20;
         /**
          * Diameter of food in pixels
-         * @type {number}
+         * @type {Number}
          */
         this.foodSize = opt.foodSize || 10;
         /**
          * How many frames to wait before killing "still" blob.
-         * @type {number}
+         * @type {Number}
          */
         this.stillFrameLimit = opt.stillFrameLimit || 200;
         /**
@@ -73,12 +73,12 @@ window.World = class {
         this.noDraw = false;
         /**
          * Offset to draw everything from
-         * @type {number}
+         * @type {Number}
          */
         this.offsetX = opt.offsetX || 0;
         /**
          * Offset to draw everything from
-         * @type {number}
+         * @type {Number}
          */
         this.offsetY = opt.offsetY || 0;
         
@@ -312,9 +312,9 @@ window.World = class {
     /**
      * Root mean squared. Useful for Pythagorean's theorm and other calculations.
      * Formula: sqrt(a^2 + b^2)
-     * @param  {number} a First number
-     * @param  {number} b Second number
-     * @return {number}   Root mean squared
+     * @param  {Number} a First number
+     * @param  {Number} b Second number
+     * @return {Number}   Root mean squared
      */
     rms(a, b) {
         return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));

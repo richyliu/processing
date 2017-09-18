@@ -4,9 +4,9 @@
 class Quadtree {
     /**
      * Makes a quadtree
-     * @param  {number} numBoxes  How many boxes wide the quadtree is
-     * @param  {number} width     Width of the screen
-     * @param  {number} height    Height of the screen
+     * @param  {Number} numBoxes  How many boxes wide the quadtree is
+     * @param  {Number} width     Width of the screen
+     * @param  {Number} height    Height of the screen
      */
     constructor(numBoxes, width, height) {
         /**
@@ -18,27 +18,27 @@ class Quadtree {
         
         /**
          * Width of the screen
-         * @constant {number}
+         * @constant {Number}
          */
         this.width = width;
         /**
          * Height of the screen
-         * @constant {number}
+         * @constant {Number}
          */
         this.height = height;
         /**
          * Width of the box
-         * @constant {number}
+         * @constant {Number}
          */
         this.boxWidth = width / numBoxes;
         /**
          * Height of the box
-         * @constant {number}
+         * @constant {Number}
          */
         this.boxHeight = height / numBoxes;
         /**
          * How many boxes wide the quadtree is
-         * @type {number}
+         * @type {Number}
          */
         this.numBoxes = numBoxes;
     }
@@ -74,9 +74,9 @@ class Quadtree {
     
     /**
      * Check for collisions with this circle
-     * @param  {number} x      X coord of the circle
-     * @param  {number} y      Y coord of the circle
-     * @param  {number} radius Radius of the circle
+     * @param  {Number} x      X coord of the circle
+     * @param  {Number} y      Y coord of the circle
+     * @param  {Number} radius Radius of the circle
      * @return {Blob[]}        Blobs that collided with circle. Array many be empty
      */
     checkCollision(x, y, radius) {

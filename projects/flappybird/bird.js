@@ -3,11 +3,13 @@
  */
 window.Bird = class {
     /**
-     * Create a bird
-     * @param  {Number} x X position to draw bird
-     * @param  {Number} y Starting y position
+     * Create a bird or breed one from parents
+     * @param  {Number} x           X position to draw bird
+     * @param  {Number} y           Starting y position
+     * @param  {Network} [parent1] One parent to breed
+     * @param  {Network} [parent2] Another parent to breed
      */
-    constructor(x, y) {
+    constructor(x, y, parent1, parent2) {
         /**
          * Y position of bird
          * @type {Number}
@@ -34,6 +36,33 @@ window.Bird = class {
          * @type {Number}
          */
         this.GRAVITY = 0.2;
+        /**
+         * The neural network that controls the bird
+         * @type {Network}
+         */
+        this.network = null;
+        
+        
+        if (parent1 && parent2) {
+            // breed a new network
+            this.network = new Network(parent1, parent2);
+        } else {
+            this.network = new Network([2, 6, 1]);
+        }
+    }
+    
+    
+    /**
+     * Let the bird's neural network move (jump) itself given the inputs.
+     * @param  {Number} distance Distance to the nearest pipe
+     * @param  {Number} position Height distance to nearest pipe. 1 is furthest
+     *                           below, -1 is furthest above.
+     */
+    move(distance, position) {
+        // console.log(distance + ', ' + position + ': ' + this.network.compute([distance, position]));
+        if (this.network.compute([distance, position]) > 0.5) {
+            this.jump();
+        }
     }
     
     

@@ -5,12 +5,12 @@
 window.Blob = class extends BasicBlob {
     /**
      * Creates a blob.
-     * @param  {number} x        X position of blob
-     * @param  {number} y        Y position of blob
-     * @param  {number} size     Diameter of blob in pixels
+     * @param  {Number} x        X position of blob
+     * @param  {Number} y        Y position of blob
+     * @param  {Number} size     Diameter of blob in pixels
      * @param  {Network} network Neural network that controls blob
      * @param  {Object} [opt]      Other options. See Members for documentation
-     * @param  {number} [opt.viewRange=5]
+     * @param  {Number} [opt.viewRange=5]
      */
     constructor(x, y, size, network, opt={}) {
         super(x, y, size);
@@ -23,23 +23,23 @@ window.Blob = class extends BasicBlob {
         
         /**
          * How many frames in a row this blob has stayed "still" (not moving 100px)
-         * @type {number}
+         * @type {Number}
          */
         this.stillFrame = 0;
         /**
          * X coord of the still position
-         * @type {number}
+         * @type {Number}
          */
         this.stillX = -1;
         /**
          * Y coord of the still position
-         * @type {number}
+         * @type {Number}
          */
         this.stillY = -1;
         
         /**
          * The diameter of the circle the blob can see as a multiplier of the size
-         * @constant {number}
+         * @constant {Number}
          */
         this.viewRange = opt.viewRange || 5;
     }
@@ -48,8 +48,8 @@ window.Blob = class extends BasicBlob {
     
     /**
      * Draws the blob and the view range.
-     * @param  {number} x Offset to draw from
-     * @param  {number} y Offset to draw from
+     * @param  {Number} x Offset to draw from
+     * @param  {Number} y Offset to draw from
      * @override
      */
     draw(x, y) {
@@ -70,10 +70,10 @@ window.Blob = class extends BasicBlob {
     
     /**
      * Moves the blob
-     * @param  {number} angle     Direction to move in radians
-     * @param  {number} magnitude How far to move in pixels
-     * @param  {number} width     Width of the screen
-     * @param  {number} height    Height of the screen
+     * @param  {Number} angle     Direction to move in radians
+     * @param  {Number} magnitude How far to move in pixels
+     * @param  {Number} width     Width of the screen
+     * @param  {Number} height    Height of the screen
      */
     move(angle, magnitude, width, height) {
         let prevX = this.x;
@@ -175,9 +175,9 @@ window.Blob = class extends BasicBlob {
     /**
      * Root mean squared. Useful for Pythagorean's theorm and other calculations.
      * Formula: sqrt(a^2 + b^2)
-     * @param  {number} a First number
-     * @param  {number} b Second number
-     * @return {number}   Root mean squared
+     * @param  {Number} a First number
+     * @param  {Number} b Second number
+     * @return {Number}   Root mean squared
      */
     rms(a, b) {
         return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));

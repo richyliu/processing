@@ -1,4 +1,4 @@
-class Network {
+window.Network = class {
     /**
      * Create a neural network with many layers of different sizes
      * @param  {number[]} sizes Array of the different sizes of the layers
@@ -108,11 +108,11 @@ class Network {
     
     /**
      * Sigmoid function
-     * @param  {number} value Input to the sigmoid function
-     * @return {number}       Output of sigmoid
+     * @param  {Number} value Input to the sigmoid function
+     * @return {Number}       Output of sigmoid
      * @private
      */
     sigmoid(value) {
         return 1 / (1 + Math.pow(Math.E, -value));
     }
-}
+};

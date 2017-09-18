@@ -4,13 +4,14 @@
 window.Pipe = class {
     /**
      * Create a new pipe
-     * @param  {Number} x      X position of pipe
-     * @param  {Number} Y      Where the gap in the pipe is (top of gap)
-     * @param  {Number} GAP    Size of the gap
-     * @param  {Number} WIDTH  Width of the pipe
-     * @param  {Number} HEIGHT Height of the entire pipe
+     * @param  {Number} x        X position of pipe
+     * @param  {Number} Y        Where the gap in the pipe is (top of gap)
+     * @param  {Number} GAP      Size of the gap
+     * @param  {Number} WIDTH    Width of the pipe
+     * @param  {Number} HEIGHT   Height of the entire pipe
+     * @param  {Number} MOVE_AMT How far to move on each frame
      */
-    constructor(x, Y, GAP, WIDTH, HEIGHT) {
+    constructor(x, Y, GAP, WIDTH, HEIGHT, MOVE_AMT) {
         
         /**
          * Y position of pipe (left boundary of pipe)
@@ -42,7 +43,7 @@ window.Pipe = class {
          * How far to move the pipe on each frame
          * @type {Number}
          */
-        this.MOVE_AMT = 1.5;
+        this.MOVE_AMT = MOVE_AMT;
     }
     
     

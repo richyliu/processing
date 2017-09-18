@@ -6,6 +6,7 @@
         "main.js"
     ],
     "globals": [
+        "Network",
         "World",
         "Bird",
         "Pipe"
