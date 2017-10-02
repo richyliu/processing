@@ -14,7 +14,7 @@ window.Pipe = class {
     constructor(x, Y, GAP, WIDTH, HEIGHT, MOVE_AMT) {
         
         /**
-         * Y position of pipe (left boundary of pipe)
+         * X position of pipe (left boundary of pipe)
          * @type {Number}
          */
         this.x = x;
@@ -29,6 +29,11 @@ window.Pipe = class {
          * @constant {Number}
          */
         this.GAP = GAP;
+        /**
+         * Center of the gap
+         * @type {Number}
+         */
+        this.GAP_CENTER = this.Y + this.GAP/2;
         /**
          * Width of the pipe
          * @constant {Number}

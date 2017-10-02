@@ -42,6 +42,12 @@ window.Bird = class {
          */
         this.network = null;
         
+        /**
+         * This bird is special
+         * @type {Boolean}
+         */
+        this.specialBird = false;
+        
         
         if (parent1 && parent2) {
             // breed a new network
@@ -59,9 +65,31 @@ window.Bird = class {
      *                           below, -1 is furthest above.
      */
     move(distance, position) {
-        // console.log(distance + ', ' + position + ': ' + this.network.compute([distance, position]));
-        if (this.network.compute([distance, position]) > 0.5) {
+        let output = this.network.compute([distance, position]);
+        // console.log(distance + ', ' + position + ': ' + output);
+        if (output > 0.5) {
             this.jump();
+        }
+        
+        // TODO: remove this later
+        if (this.specialBird && false) {
+            // bounding box
+            p.fill('white');
+            p.stroke('black');
+            p.strokeWeight(5);
+            p.rect(400, 500, 600, 700);
+            
+            // middle line
+            p.strokeWeight(1);
+            p.line(400, 600, 600, 600);
+            
+            // inputs & outputs
+            // TODO: finish
+            p.fill('blue');
+            p.rect(450, 600, 475, 600+distance*100);
+            p.rect(475, 600, 500, 600+position*100);
+            p.fill('red');
+            p.rect(500, 600, 525, 550+output*100);
         }
     }
     
@@ -70,7 +98,7 @@ window.Bird = class {
      * Draws the bird and updates its y position
      */
     draw() {
-        p.fill('yellow');
+        p.fill(this.specialBird ? 'red' : 'yellow');
         p.noStroke();
         p.ellipse(this.X, this.y, this.SIZE);
         

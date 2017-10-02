@@ -38,7 +38,8 @@ window.World = class {
          * Height of the gap between top and bottom pipe
          * @constant {Number}
          */
-        this.GAP_SIZE = 135;
+        // this.GAP_SIZE = 135;
+        this.GAP_SIZE = 200;
         /**
          * How wide each pipe is
          * @constant {Number}
@@ -48,12 +49,22 @@ window.World = class {
          * Part of the population to use when breeding the next generation
          * @constant {Number}
          */
-        this.ELITE = 0.3;
+        this.ELITE = 0.1;
         /**
          * How far in the x direction to move everything each frame
          * @type {Number}
          */
         this.MOVE_AMT = 1.5;
+        /**
+         * Weight of the vertical distance from the gap when calculating fitness
+         * @type {Number}
+         */
+        this.VERT_WEIGHT = 0.5;
+        /**
+         * Weight of the total distance travelled when calculating fitness
+         * @type {Number}
+         */
+        this.HORZ_WEIGHT = 1;
         /**
          * Current x position of all alive birds
          * @type {Number}
@@ -68,8 +79,13 @@ window.World = class {
          * Plot of best fitness each generation
          * @type {GPlot}
          */
-        this.bestFitnessPlot = new GPlot(p);
-        this.bestFitnessPlot.setPos(this.WIDTH, 0);
+        this.bestFitnessPlot = new GPlot(p, 100, this.HEIGHT, 350, 200);
+		this.bestFitnessPlot.getXAxis().setAxisLabelText('generation');
+		this.bestFitnessPlot.getYAxis().setAxisLabelText('best fitness');
+        
+        this.meanFitnessPlot = new GPlot(p, 450, this.HEIGHT, 350, 200);
+        this.meanFitnessPlot.getXAxis().setAxisLabelText('generation');
+		this.meanFitnessPlot.getYAxis().setAxisLabelText('avg fitness');
         
         /**
          * Birds that are currently alive. Dead birds are set to undefined.
@@ -92,16 +108,8 @@ window.World = class {
         Array(numBirds).fill(0).forEach(() => {
             this.birds.push(new Bird(this.birdX, p.random(0, this.HEIGHT)));
         });
-        Array(Math.floor(this.WIDTH/this.pipeFrequency)).fill(0).forEach((_, index) => {
-            this.pipes.push(new Pipe(
-                300 + index*this.pipeFrequency,
-                p.random(10, this.HEIGHT-this.GAP_SIZE-10),
-                this.GAP_SIZE,
-                this.PIPE_WIDTH,
-                this.HEIGHT,
-                this.MOVE_AMT
-            ));
-        });
+        this.pipes = Array(Math.ceil(this.WIDTH/this.pipeFrequency)).fill(0);
+        this.resetPipes();
     }
     
     
@@ -118,7 +126,10 @@ window.World = class {
         p.fill('black');
         p.text(this.currentX, 10, 550);
         
+        this.bestFitnessPlot.defaultDraw();
+        this.meanFitnessPlot.defaultDraw();
         this.currentX += this.MOVE_AMT;
+        
         
         this.birds.forEach((bird, index) => {
             if (!bird) return;
@@ -126,7 +137,7 @@ window.World = class {
             let cp = this.pipes[this.closestPipe];
             // distance to nearest pipe normalized by greatest distance possible
             // and distance from center of gap of nearest pipe
-            bird.move((cp.x-this.birdX)/this.pipeFrequency, (bird.y - cp.x+this.GAP_SIZE/2)/this.HEIGHT);
+            bird.move((cp.x-this.birdX)/this.pipeFrequency, (bird.y - cp.GAP_CENTER)/this.HEIGHT);
             bird.draw();
             
             // check for collision
@@ -147,7 +158,9 @@ window.World = class {
                 // bird dies
                 this.dead.push({
                     bird: bird,
-                    fitness: this.currentX - (cp.x-this.birdX)
+                    // calculate fitness
+                    // current distance minus y-distance from gap (scaled from 0 to 1)
+                    fitness: this.currentX*this.HORZ_WEIGHT - Math.abs(bird.y-cp.GAP_CENTER)*this.VERT_WEIGHT
                 });
                 this.birds[index] = undefined;
             }
@@ -156,19 +169,32 @@ window.World = class {
         
         this.pipes.forEach(pipe => {
             pipe.draw();
-            
-            // pipe goes offscreen
-            if (pipe.x < 0) {
-                // respawn
-                this.resetPipe(this.closestPipe);
-                
-                // make next pipe the closest
-                this.closestPipe++;
-                if (this.closestPipe == this.pipes.length) {
-                    this.closestPipe = 0;
-                }
-            }
         });
+        
+        // color closest pipe
+        p.fill('red');
+        p.rect(this.pipes[this.closestPipe].x, 0, this.pipes[this.closestPipe].x+10, 10);
+        
+        
+        // if closest pipe goes offscreen
+        if (this.pipes[this.closestPipe].x+this.PIPE_WIDTH < 0) {
+            // TODO: fix pipe spawining problem
+            // respawn pipe
+            this.pipes[this.closestPipe] = new Pipe(
+                this.pipeFrequency*this.pipes.length-this.PIPE_WIDTH,
+                p.random(10, this.HEIGHT-this.GAP_SIZE-10),
+                this.GAP_SIZE,
+                this.PIPE_WIDTH,
+                this.HEIGHT,
+                this.MOVE_AMT
+            );
+            
+            // make next pipe the closest
+            this.closestPipe++;
+            if (this.closestPipe == this.pipes.length) {
+                this.closestPipe = 0;
+            }
+        }
         
         // respawn birds once all are dead
         if (this.dead.length == this.birds.length) {
@@ -178,19 +204,20 @@ window.World = class {
     
     
     /**
-     * Reset a pipe given the index
-     * @param {Number} index Index of the pipe array to reset
+     * Reset all the pipes
      */
-    resetPipe(index) {
-        // TODO: where to spawn pipe? (y-position)
-        this.pipes[index] = new Pipe(
-            this.HEIGHT,
-            p.random(10, this.HEIGHT-this.GAP_SIZE-10),
-            this.GAP_SIZE,
-            this.PIPE_WIDTH,
-            this.HEIGHT,
-            this.MOVE_AMT
-        );
+    resetPipes() {
+        this.closestPipe = 0;
+        this.pipes = this.pipes.map((_, index) => {
+            return new Pipe(
+                (index+1)*this.pipeFrequency + this.birdX,
+                p.random(10, this.HEIGHT-this.GAP_SIZE-10),
+                this.GAP_SIZE,
+                this.PIPE_WIDTH,
+                this.HEIGHT,
+                this.MOVE_AMT
+            );
+        });
     }
     
     
@@ -201,15 +228,27 @@ window.World = class {
         // reset birds list
         this.birds = [];
         this.currentX = 0;
+        this.generation++;
+        this.resetPipes();
         
-        // sort population according to fitness
+        // sort population according to fitness (best fit first)
         this.dead.sort((a, b) => {
             if (a.fitness < b.fitness) return 1;
             else if (a.fitness > b.fitness) return 0;
             else return -1;
         });
+        
         // take ELITE part of population
         let elite = this.dead.slice(0, this.ELITE*this.dead.length);
+        
+        // update graph with best fit
+        this.bestFitnessPlot.addPoint(new GPoint(this.generation, elite[0].fitness));
+        // update graph with avg fit
+        let value = elite.reduce((sum, bird) => {
+            return {fitness: sum.fitness + bird.fitness};
+        });
+        this.meanFitnessPlot.addPoint(new GPoint(this.generation, value.fitness/this.dead.length));
+        
         // breed them with one another to create a new population/generation
         for (let husband = 0; husband < elite.length; husband++) {
             for (let wife = 0; wife <= husband; wife++) {
@@ -222,5 +261,6 @@ window.World = class {
         }
         
         this.dead = [];
+        this.birds[0].specialBird = true;
     }
 };

@@ -1,0 +1,9 @@
+{
+    "files": [
+        "data.js",
+        "main.js"
+    ],
+    "globals": [
+        "geodash_data"
+    ]
+}
