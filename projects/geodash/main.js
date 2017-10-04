@@ -28,17 +28,17 @@ window.mainCode = () => {
      * How far to move spike each frame
      * @const {Number}
      */
-    const SPIKE_SPEED = 4;
+    const SPIKE_SPEED = 10;
     /**
      * This is added to velocity every frame
      * @type {Number}
      */
-    const GRAVITY = 0.9;
+    const GRAVITY = 1;
     /**
      * Velocity of jumping
      * @type {Number}
      */
-    const JUMP = 9;
+    const JUMP = 12;
     
     /**
      * Y position of the player
@@ -56,10 +56,25 @@ window.mainCode = () => {
      */
     let playerVelocity = 0;
     /**
-     * Array of spikes' leftmost point distance from left side of screen
+     * Array of spikes' leftmost point distance from left side of screen.
      * @type {Number[]}
      */
-    let spikes = window.geodash_data.level1.map(num => num*PLAYER_SIZE);
+    // let spikes = window.geodash_data.level1.map(num => num*PLAYER_SIZE);
+    let spikes = [400, 700];
+    /**
+     * Array of blocks' leftmost point from the left side of the screen. If
+     * 2nd layer array used, 1st element is the distance, 2nd element is the
+     * height of the tower of blocks (in grid units)
+     * @type {Number[][]}
+     */
+    let blocks = [];
+    /**
+     * Array of halfblocks' leftmost point from the left side of the screen. If
+     * 2nd layer array used, 1st element is the distance, 2nd element is the y
+     * position of the block (in grid units)
+     * @type {Number[][]}
+     */
+    let halfBlocks = [];
     /**
      * Y position of the ground
      * @type {Number}
@@ -145,4 +160,46 @@ window.mainCode = () => {
     p.keyPressed = () => {
         playerVelocity = -JUMP;
     };
+    
+    
+    function parseSpikes(str) {
+        // current x position the parser is on
+        let currentPos = 0;
+        let segments = str.split(' ');
+        
+        segments.forEach(s => {
+            if (s.length >= 2 && s.length <= 3) {
+                currentPos += (Math.parseInt(s[0]) + 1) * SPIKE_SIZE;
+                switch (s[1]) {
+                    case '.':
+                        // spike
+                        spikes.push(currentPos);
+                        break;
+                    case '=':
+                        // full block, height of block tower
+                        if (s.length == 3){
+                            blocks.push([currentPos, Math.parseInt(s[2])]);
+                        } else {
+                            blocks.push(currentPos);
+                        }
+                        break;
+                    case '-':
+                        // half block
+                        if (s.length == 3){
+                            halfBlocks.push([currentPos, Math.parseInt(s[2])]);
+                        } else {
+                            halfBlocks.push(currentPos);
+                        }
+                        break;
+                    default:
+                        
+                }
+            } else {
+                // invalid level string
+                console.error('Level string invalid at: ' + s);
+            }
+        });
+        
+        return spikes;
+    }
 };
