@@ -5,6 +5,8 @@
         <title>Projects</title>
     </head>
     <body>
+        <button type="button" onclick="p.noLoop()">Stop</button>
+        <div id="output"></div>
         <script src="../min/jquery-3.2.1.min.js"></script>
         <script src="../min/p5.min.js"></script>
         <script src="../min/grafica.min.js"></script>
@@ -15,17 +17,30 @@
             let match = window.location.href.match(/\?(.+)/) || ['', 'fidgetspinner'];
             
             $.get(`${match[1]}/manifest.json`, manifest => {
+                // number of files that need to be loaded before executing main
+                let numFiles = manifest.files.length;
+                // number of files that are done
+                let numDone = 0;
+                // all the code
+                let code = Array(numFiles).fill('');
+                
                 // load scripts
-                manifest.files.forEach(file => {
-                    $.getScript(`${match[1]}/${file}`, () => {
-                        // load p5 once main has been loaded
-                        if (typeof window.mainCode == 'function') {
+                manifest.files.forEach((file, i) => {
+                    $.get(`${match[1]}/${file}`, script => {
+                        // save script to spot in code
+                        code[i] = script;
+                        
+                        numDone++;
+                        // run all the code once everything has been loaded
+                        if (numDone == numFiles) {
                             new p5(instance => {
                                 window.p = instance;
-                                window.mainCode();
-                            });
+                                code.forEach(c => {
+                                    $.globalEval(c);
+                                });
+                            }, $('#output')[0]);
                         }
-                    }).fail(() => {
+                    }, 'text').fail(() => {
                         console.error(`Failed to load ${match[1]}/${file}!`);
                     });
                 });

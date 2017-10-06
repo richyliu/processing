@@ -158,7 +158,6 @@ function save() {
 function runCode() {
     switchScreen();
     save();
-    window.mainCode = null;
     $('#output').html('');
     window.p = null;
     let project = $('#project')[0].value;
@@ -167,22 +166,27 @@ function runCode() {
         window[global] = null;
     });
     
-    let allFiles = {};
+    // number of files that need to be loaded before executing main
+    let numFiles = directory[project].length;
+    // number of files that are done
+    let numDone = 0;
+    // all the code
+    let code = Array(numFiles).fill('');
     
-    directory[project].forEach(file => {
+    directory[project].forEach((file, i) => {
         ref.child(project).child(file).once('value', snapshot => {
-            allFiles[file] = snapshot.val();
-            // last file
-            if (Object.keys(allFiles).length == directory[project].length) {
-                // execute all the code in the correct order
-                directory[project].forEach(fileName => {
-                    $.globalEval(window.atob(allFiles[fileName]));
-                });
-                
-                // create p5 instance
+            // save file to spot in code
+            code[i] = window.atob(snapshot.val());
+            
+            numDone++;
+            
+            // run all the code once everything has been loaded
+            if (numDone == numFiles) {
                 new p5(instance => {
                     window.p = instance;
-                    window.mainCode();
+                    code.forEach(c => {
+                        $.globalEval(c);
+                    });
                 }, $('#output')[0]);
             }
         });

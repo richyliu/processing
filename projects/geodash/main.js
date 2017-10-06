@@ -1,4 +1,4 @@
-window.mainCode = () => {
+// window.mainCode = () => {
     /**
      * Width of the screen
      * @const {Number}
@@ -87,11 +87,11 @@ window.mainCode = () => {
     let deathCount = 0;
     
     
-    
     p.setup = () => {
         p.createCanvas(WIDTH, HEIGHT);
         p.rectMode(p.CORNER);
         p.frameRate(30);
+        // p.noLoop();
     };
     
     
@@ -202,4 +202,6 @@ window.mainCode = () => {
         
         return spikes;
     }
-};
+    
+    window.parseSpikes = parseSpikes;
+// };
