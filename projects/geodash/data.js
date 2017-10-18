@@ -10,8 +10,10 @@
  */
 window.geodash_data = {
     // in units called grids
-    level1: {
-        spikes: '2. 3. 0. 4= 0. 0. 0. 0=2 0. 0. 0. 0=3',
-        
-    }
+    level1: [
+        /*   |    1    |    2    |    3    |    4    |    5    |    6    |*/
+        '                                                               .',
+        '                            =                                  .',
+        '.        .      .      =    =                                  .'
+    ]
 };
