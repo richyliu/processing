@@ -1,14 +1,14 @@
 // Initialize Firebase
 firebase.initializeApp({
-    apiKey: "AIzaSyCNijsg_9QoHtOOYcqDHTmlkPz2czAt26s",
-    authDomain: "code-editor-64d96.firebaseapp.com",
-    databaseURL: "https://code-editor-64d96.firebaseio.com",
-    projectId: "code-editor-64d96",
-    storageBucket: "code-editor-64d96.appspot.com",
-    messagingSenderId: "38033207002"
+    apiKey: "AIzaSyD16sxuBw-TuNRZaPbXzSH7-iA_hXWts-g",
+    authDomain: "main-fe047.firebaseapp.com",
+    databaseURL: "https://main-fe047.firebaseio.com",
+    projectId: "main-fe047",
+    storageBucket: "main-fe047.appspot.com",
+    messagingSenderId: "900205917314"
 });
 
-let ref = firebase.database().ref();
+let ref = firebase.database().ref('code-editor');
 let password;
 let auth = '?client_id=d036f9ed0ff4ffe05f92&client_secret=94968fd4157d632abbe1b0d5d2de52ecaa077f09';
 // a list of all the files and folders
