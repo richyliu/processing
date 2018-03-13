@@ -16,15 +16,32 @@ function setup () {
     let canvas = createCanvas(SCREEN_WIDTH, SCREEN_HEIGHT);
     canvas.parent('output');
     colorMode(HSB, 1, 1, 1, 1);
+    textSize(20);
 }
 
 
 function draw () {
     background('yellow');
+
+    // draw button
+    fill('blue');
+    rect(0, 0, 100, 50);
+    fill('white');
+    text('Clear', 20, 30);
+
+    // draw balls
     balls.forEach(ball => ball.draw());
 }
 
 
 function mouseClicked () {
-    balls.push(new Ball(mouseX, mouseY));
+    let x = mouseX;
+    let y = mouseY;
+    if (0 > x || x > SCREEN_WIDTH || 0 > y || y > SCREEN_HEIGHT) return;
+
+    if (0 < x && x < 100 && 0 < y && y < 50) {
+        balls = [];
+    } else {
+        balls.push(new Ball(x, y));
+    }
 }

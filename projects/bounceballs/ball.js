@@ -15,24 +15,24 @@ class Ball {
             fill(this.color);
             noStroke();
             
-            this.age -= 0.005;
+            //this.age -= 0.003;
 
             ellipse(this.x, this.y, this.size, this.size);
             this.x += this.speed * Math.cos(this.direction);
             this.y += this.speed * Math.sin(this.direction);
             
-            if (this.x > SCREEN_WIDTH) {
-                this.x = SCREEN_WIDTH;
+            if (this.x > SCREEN_WIDTH - this.size/2) {
+                this.x = SCREEN_WIDTH - this.size/2;
                 this.direction += Math.PI;
-            } else if (this.x < 0) {
-                this.x = 0;
+            } else if (this.x < this.size/2) {
+                this.x = this.size/2;
                 this.direction += Math.PI;
             }
-            if (this.y > SCREEN_HEIGHT) {
-                this.y = SCREEN_HEIGHT;
+            if (this.y > SCREEN_HEIGHT - this.size/2) {
+                this.y = SCREEN_HEIGHT - this.size/2;
                 this.direction += Math.PI;
-            } else if (this.y < 0) {
-                this.y = 0;
+            } else if (this.y < this.size/2) {
+                this.y = this.size/2;
                 this.direction += Math.PI;
             }
         }
