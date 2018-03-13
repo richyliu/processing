@@ -8,20 +8,21 @@ let balls = [];
 
 function preload () {
     
-};
+}
 
 
 
 function setup () {
-    createCanvas(SCREEN_WIDTH, SCREEN_HEIGHT);
+    let canvas = createCanvas(SCREEN_WIDTH, SCREEN_HEIGHT);
+    canvas.parent('output');
     colorMode(HSB, 1, 1, 1, 1);
-};
+}
 
 
 function draw () {
     background('yellow');
     balls.forEach(ball => ball.draw());
-};
+}
 
 
 function mouseClicked () {

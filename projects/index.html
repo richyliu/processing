@@ -5,47 +5,62 @@
         <title>Projects</title>
     </head>
     <body>
-        <button type="button" onclick="p.noLoop()">Stop</button>
         <div id="output"></div>
+        <button onclick="p.noLoop();">Stop</button>
+        <button onclick="p.loop();">Start</button>
+
         <script src="../min/jquery-3.2.1.min.js"></script>
         <script src="../min/p5.min.js"></script>
-        <script src="../min/grafica.min.js"></script>
+        <!--<script src="../min/grafica.min.js"></script>
         <script src="../min/quadtree.min.js"></script>
         <script src="../min/Deserialize.js"></script>
-        <script src="shared/NeuralNetwork.js"></script>
+        <script src="shared/NeuralNetwork.js"></script>-->
         <script>
-            let match = window.location.href.match(/\?(.+)/) || ['', 'fidgetspinner'];
+            let match = window.location.search.slice(1) || 'fidgetspinner';
             
-            $.get(`${match[1]}/manifest.json`, manifest => {
+            function getFile(url, resType, callback, errorCb=()=>{}) {
+                let xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.responseType = resType;
+                xhr.onload = () => {
+                    let status = xhr.status;
+                    if (status === 200) {
+                        callback(xhr.response);
+                    } else {
+                        errorCb(xhr.response);
+                    }
+                };
+                xhr.send();
+            }
+
+            getFile(`${match}/manifest.json`, 'json', manifest => {
                 // number of files that need to be loaded before executing main
                 let numFiles = manifest.files.length;
                 // number of files that are done
                 let numDone = 0;
                 // all the code
                 let code = Array(numFiles).fill('');
+                console.log(manifest.files);
                 
-                // load scripts
+                // load scripts (allows for loading out of order to save time)
                 manifest.files.forEach((file, i) => {
-                    $.get(`${match[1]}/${file}`, script => {
+                    getFile(`${match}/${file}`, 'text', script => {
                         // save script to spot in code
                         code[i] = script;
-                        
                         numDone++;
+
                         // run all the code once everything has been loaded
                         if (numDone == numFiles) {
-                            new p5(instance => {
-                                window.p = instance;
-                                code.forEach(c => {
-                                    $.globalEval(c);
-                                });
-                            }, $('#output')[0]);
+                            // global eval trick
+                            (1, eval)(code.join(''));
+                            window.p = new p5();
                         }
-                    }, 'text').fail(() => {
-                        console.error(`Failed to load ${match[1]}/${file}!`);
+                    }, () => {
+                        console.error(`${match}/${file}.js failed to load!`); 
                     });
                 });
-            }).fail(() => {
-                console.error(`Failed to load ${match[1]}/manifest.json!`);
+            }, () => {
+                console.error(`${match}/manifest.json failed to load!`); 
             });
         </script>
     </body>
