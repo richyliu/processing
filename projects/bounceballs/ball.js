@@ -1,23 +1,23 @@
-window.Ball = class {
+class Ball {
     constructor(x, y, direction, size, speed) {
         this.x = x;
         this.y = y;
-        this.direction = direction || p.random(2*Math.PI);
+        this.direction = direction || random(2*Math.PI);
         this.size = size || 40;
         this.speed = speed || 2;
         this.age = 1;
-        this.color = p.color(p.random(), 1, 1, 1);
+        this.color = color(random(), 1, 1, 1);
     }
 
     draw() {
         if (this.age > 0) {
             this.color.setAlpha(this.age);
-            p.fill(this.color);
-            p.noStroke();
+            fill(this.color);
+            noStroke();
             
             this.age -= 0.005;
 
-            p.ellipse(this.x, this.y, this.size, this.size);
+            ellipse(this.x, this.y, this.size, this.size);
             this.x += this.speed * Math.cos(this.direction);
             this.y += this.speed * Math.sin(this.direction);
             

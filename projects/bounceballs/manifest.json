@@ -1,9 +1,0 @@
-{
-    "files": [
-        "ball.js",
-        "index.js"
-    ],
-    "globals": [
-        "Ball"
-    ]
-}
