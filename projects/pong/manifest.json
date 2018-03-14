@@ -1,5 +1,6 @@
 {
     "files": [
+        "constants.js",
         "paddle.js",
         "index.js"
     ]
