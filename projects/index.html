@@ -11,6 +11,7 @@
 
         <script src="../min/jquery-3.2.1.min.js"></script>
         <script src="../min/p5.min.js"></script>
+        <script src="../min/p5.collide2d.min.js"></script>
         <!--<script src="../min/grafica.min.js"></script>
         <script src="../min/quadtree.min.js"></script>
         <script src="../min/Deserialize.js"></script>
@@ -50,8 +51,11 @@
 
                         // run all the code once everything has been loaded
                         if (numDone == numFiles) {
-                            // global eval trick
-                            (1, eval)(code.join(''));
+                            // run all the code by creating a script element
+                            let script = document.createElement("script");
+                            script.text = code.join('');
+                            document.head.appendChild(script).parentNode.removeChild(script);
+
                             window.p = new p5();
                         }
                     }, () => {

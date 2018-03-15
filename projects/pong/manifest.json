@@ -1,6 +1,8 @@
 {
     "files": [
         "constants.js",
+        "moveable.js",
+        "ball.js",
         "paddle.js",
         "index.js"
     ]
