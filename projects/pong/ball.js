@@ -10,7 +10,8 @@ class Ball extends Moveable {
      * @param {number} direction The object is relative to the ball in radians
      */
     bounce(direction) {
-        this.direction = 2*direction - this.direction + PI;
+        this.direction = 2*direction - this.direction + PI + random(0.1);
         this.direction %= TWO_PI;
+        this.speed += 0.1;
     }
 }

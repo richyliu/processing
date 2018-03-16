@@ -44,10 +44,10 @@ function draw () {
 
     // ball out of bounds
     if (ball.x < paddle.x) {
-        respawnPopup();
+        respawnPopup('You lost!');
         ball.moves = false;
     } else if (ball.x > compPaddle.x) {
-        respawnPopup();
+        respawnPopup('The computer lost!');
         ball.moves = false;
     }
 
@@ -60,11 +60,17 @@ function draw () {
     compPaddle.move(mouseX);
 
     // draw mouse positions
+    push();
+    if (ball.x < SCREEN_WIDTH && ball.x > SCREEN_WIDTH-150 && ball.y > 0 && ball.y < 50)
+        translate(0, 0);
+    else
+        translate(450, 0);
     fill('yellow');
-    rect(450, 0, 150, 50);
+    rect(0, 0, 150, 50);
     fill('blue');
-    text(mouseX, 450, 0, 75, 50);
-    text(mouseY, 525, 0, 75, 50);
+    text(mouseX, 0, 0, 75, 50);
+    text(mouseY, 75, 0, 75, 50);
+    pop();
 
     // draw countdown timer
     if (countdown == 3 || countdown == 2 || countdown == 1) {
@@ -94,13 +100,18 @@ function mouseClicked() {
 /**
  * The player has died (ball touched either side)
  * 
- * @param {string} text To display on death
+ * @param {string} txt To display on death
  */
-function respawnPopup(text) {
+function respawnPopup(txt) {
     fill('white');
     rect(200, 250, 200, 100);
     fill('blue');
-    text('Restart', 200, 250, 200, 100);
+    text(txt, 200, 250, 200, 50);
+    
+    push();
+    textSize(15);
+    text('Click to restart', 200, 300, 200, 50);
+    pop();
 
     respawnWait = true;
 }
