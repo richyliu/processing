@@ -1,6 +1,7 @@
 {
     "files": [
         "constants.js",
+        "CollisionEngine.js",
         "moveable.js",
         "ball.js",
         "paddle.js",

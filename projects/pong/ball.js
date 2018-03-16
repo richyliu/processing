@@ -1,6 +1,14 @@
 class Ball extends Moveable {
     constructor(x, y, direction) {
-        super(x, y, 20, 'white', true, direction, 5);
+        super({
+            x: x,
+            y: y,
+            radius: 20,
+            color: 'white',
+            moves: true,
+            direction: direction,
+            speed: 5
+        });
     }
 
 

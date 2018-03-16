@@ -1,11 +1,12 @@
 class Paddle extends Moveable {
     constructor(x, y) {
-        super(x, y, 20, 100, 'blue');
-        //this.x = x;
-        //this.y = y;
-        this.color = 'blue';
-        //this.width = 20;
-        //this.height = 100;
+        super({
+            x: x,
+            y: y,
+            width: 20,
+            height: 100,
+            color: 'blue'
+        });
     }
 
 

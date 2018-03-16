@@ -1,38 +1,72 @@
 class Moveable {
     /**
-     * Makes a new Moveable object
-     *
-     * @param {!number} x Top left corner
-     * @param {!number} y Top left corner
-     * @param {!number} width Width
-     * @param {number} height Height
-     * @param {string} [color=blue] Color to draw
-     * @param {boolean} [moves=false] Object moves according to physics rules. Makes direction and speed required
-     * @param {number} direction Direction of the object in radians
-     * @param {number} speed Speed of the object, >= 0
+     * Makes a rectangular moveable object
+     * 
+     * @param {!object} obj Options
+     * @param {!number} obj.x Top left x
+     * @param {!number} obj.y Top left corner
+     * @param {!number} obj.width Width
+     * @param {!number} obj.height Height
+     * @param {string} [obj.color=blue] Color to draw
+     * @param {boolean} [obj.moves=false] Object moves according to physics rules. Makes direction and speed required
+     * @param {number} [obj.direction] Direction of the object in radians
+     * @param {number} [obj.speed] Speed of the object, >= 0
+     *//**
+     * Makes a circular moveable object
+     * 
+     * @param {!object} obj Options
+     * @param {!number} obj.x Top left x
+     * @param {!number} obj.y Top left corner
+     * @param {!number} obj.radius Radius
+     * @param {string} [obj.color=blue] Color to draw
+     * @param {boolean} [obj.moves=false] Object moves according to physics rules. Makes direction and speed required
+     * @param {number} [obj.direction=0] Direction of the object in radians
+     * @param {number} [obj.speed=0] Speed of the object, >= 0
      */
-    constructor(x, y, width, height, color, moves, direction, speed) {
-        this.x = x;
-        this.y = y;
-
-        if (typeof height == 'number') {
-            this.width = width;
-            this.height = height;
-            this.color = color || 'blue';
-            this.moves = moves || false;
-            this.direction = direction;
-            this.speed = speed;
-        } else {
-            this.radius = width;
-            this.color = height;
-            this.moves = color || 'blue';
-            this.direction = moves || false;
-            this.speed = direction;
+    constructor(obj) {
+        if (!obj) {
+            console.error('No options object');
+            return;
         }
+
+        this.x = obj.x;
+        this.y = obj.y;
+        this.color = obj.color || 'blue';
+        
+        if (obj.moves) {
+            this.moves = obj.moves;
+            if (!obj.direction) {
+                console.error('Object moves, so it must have a direction');
+            }
+            if (!obj.speed) {
+                console.error('Object moves, so it must have a speed');
+            }
+            this.direction = obj.direction;
+            this.speed = obj.speed;
+        } else {
+            this.moves = obj.moves;
+        }
+        
+        if (obj.radius) {
+            if (obj.radius <= 0) {
+                console.error('Radius must be > 0!');
+            }
+            this.radius = obj.radius;
+        } else {
+            if (obj.width <= 0) {
+                console.error('Width must be > 0!');
+            }
+            if (obj.height <= 0) {
+                console.error('Height must be > 0!');
+            }
+            this.width = obj.width;
+            this.height = obj.height;
+        }
+        
     }
 
     /**
-     * Draws the object onscreen. Recommend override
+     * Draws the object onscreen.
      */
     draw() {
         push();
