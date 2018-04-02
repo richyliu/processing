@@ -1,5 +1,3 @@
-declare var module: any;
-
 class Settings {
     public static debug: boolean = true;
 }
@@ -23,10 +21,10 @@ class Util {
     }
 }
 
-class Factory {
+class Object {
     private _id: string;
 
-    public Factory() {
+    constructor() {
         this._id = Util.generateId();
     }
 
@@ -41,34 +39,15 @@ class Factory {
             Exception.warn('Cannot set id (maybe use debug mode?)');
         }
     }
-
-    public generate(): Factory {
-        
-        return new Factory();
-    }
 }
 
 class Bounds {
-    public Bounds() {
-        
-    }
-}
-
-class PhysicalFactory {
-    
-    public PhysicalFactory() {
-        
-    }
-}
-
-
-class RectFactory {
     public x: number;
     public y: number;
     public width: number;
     public height: number;
 
-    public RectFactory(x, y, width, height) {
+    constructor(x, y, width, height) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -76,11 +55,31 @@ class RectFactory {
     }
 }
 
+class PhysicalObject extends Object {
+    public bounds: Bounds;
+    public body: Matter.Body;
 
-class EllipseFactory {
-    public CircleFactory() {
+    constructor(x, y, width, height) {
+        super();
+
+        this.bounds = new Bounds(x, y, width, height);
+    }
+}
+
+
+class RectObject extends PhysicalObject {
+
+    constructor(x, y, width, height) {
+        super(x, y, width, height);
 
     }
 }
 
-export { Settings, Exception, Util, Factory, Bounds };
+
+class EllipseObject {
+    constructor() {
+
+    }
+}
+
+export { Settings, Exception, Util, Object, Bounds };
