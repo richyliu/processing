@@ -47,6 +47,7 @@ var Factory = /** @class */ (function () {
         configurable: true
     });
     Factory.prototype.generate = function () {
+        return new Factory();
     };
     return Factory;
 }());
@@ -82,4 +83,5 @@ var EllipseFactory = /** @class */ (function () {
     };
     return EllipseFactory;
 }());
+export { Settings, Exception, Util, Factory, Bounds };
 //# sourceMappingURL=test.js.map

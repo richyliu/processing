@@ -3,5 +3,9 @@
         "target": "es5",
         "module": "es2015",
         "sourceMap": true
-    }
+    },
+    "files": [
+        "main.ts",
+        "test.ts"
+    ]
 }

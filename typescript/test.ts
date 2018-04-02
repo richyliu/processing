@@ -1,3 +1,5 @@
+declare var module: any;
+
 class Settings {
     public static debug: boolean = true;
 }
@@ -80,3 +82,5 @@ class EllipseFactory {
 
     }
 }
+
+export { Settings, Exception, Util, Factory, Bounds };
