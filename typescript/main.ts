@@ -1,13 +1,10 @@
 // declare function require(name: string);
 // const foo = require('./test.js');
 
-import { Util } from './test.js';
+import * as Lib from './test.js';
 
-class Main {
-    public static main(args: string[]): void {
-        console.log(Util.generateId());
-        console.log('Hello, world!');
-    }
-}
+console.log(Lib.Util.generateId());
+console.log('Hello, world!');
 
-Main.main(['']);
+let obj = new Lib.PhysicalObject(0, 0, 100, 100);
+console.log(obj);

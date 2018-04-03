@@ -1,15 +1,17 @@
-class Settings {
+import * as Matter from 'matter'
+
+export class Settings {
     public static debug: boolean = true;
 }
 
-class Exception {
+export class Exception {
     public static warn(message: string) {
         if (!Settings.debug)
             console.warn(message);
     }
 }
 
-class Util {
+export class Util {
     public static generateId(): string {
         let text: string = "";
         const possible: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -21,7 +23,7 @@ class Util {
     }
 }
 
-class Object {
+export class BaseObject {
     private _id: string;
 
     constructor() {
@@ -41,7 +43,7 @@ class Object {
     }
 }
 
-class Bounds {
+export class Bounds {
     public x: number;
     public y: number;
     public width: number;
@@ -55,7 +57,7 @@ class Bounds {
     }
 }
 
-class PhysicalObject extends Object {
+export class PhysicalObject extends BaseObject {
     public bounds: Bounds;
     public body: Matter.Body;
 
@@ -67,7 +69,7 @@ class PhysicalObject extends Object {
 }
 
 
-class RectObject extends PhysicalObject {
+export class RectObject extends PhysicalObject {
 
     constructor(x, y, width, height) {
         super(x, y, width, height);
@@ -76,10 +78,8 @@ class RectObject extends PhysicalObject {
 }
 
 
-class EllipseObject {
+export class EllipseObject {
     constructor() {
 
     }
 }
-
-export { Settings, Exception, Util, Object, Bounds };

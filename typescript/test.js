@@ -1,9 +1,20 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var Settings = /** @class */ (function () {
     function Settings() {
     }
     Settings.debug = true;
     return Settings;
 }());
+export { Settings };
 var Exception = /** @class */ (function () {
     function Exception() {
     }
@@ -13,6 +24,7 @@ var Exception = /** @class */ (function () {
     };
     return Exception;
 }());
+export { Exception };
 var Util = /** @class */ (function () {
     function Util() {
     }
@@ -25,13 +37,12 @@ var Util = /** @class */ (function () {
     };
     return Util;
 }());
-var Factory = /** @class */ (function () {
-    function Factory() {
-    }
-    Factory.prototype.Factory = function () {
+export { Util };
+var BaseObject = /** @class */ (function () {
+    function BaseObject() {
         this._id = Util.generateId();
-    };
-    Object.defineProperty(Factory.prototype, "id", {
+    }
+    Object.defineProperty(BaseObject.prototype, "id", {
         get: function () {
             return this._id;
         },
@@ -46,42 +57,41 @@ var Factory = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Factory.prototype.generate = function () {
-        return new Factory();
-    };
-    return Factory;
+    return BaseObject;
 }());
+export { BaseObject };
 var Bounds = /** @class */ (function () {
-    function Bounds() {
-    }
-    Bounds.prototype.Bounds = function () {
-    };
-    return Bounds;
-}());
-var PhysicalFactory = /** @class */ (function () {
-    function PhysicalFactory() {
-    }
-    PhysicalFactory.prototype.PhysicalFactory = function () {
-    };
-    return PhysicalFactory;
-}());
-var RectFactory = /** @class */ (function () {
-    function RectFactory() {
-    }
-    RectFactory.prototype.RectFactory = function (x, y, width, height) {
+    function Bounds(x, y, width, height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-    };
-    return RectFactory;
-}());
-var EllipseFactory = /** @class */ (function () {
-    function EllipseFactory() {
     }
-    EllipseFactory.prototype.CircleFactory = function () {
-    };
-    return EllipseFactory;
+    return Bounds;
 }());
-export { Settings, Exception, Util, Factory, Bounds };
+export { Bounds };
+var PhysicalObject = /** @class */ (function (_super) {
+    __extends(PhysicalObject, _super);
+    function PhysicalObject(x, y, width, height) {
+        var _this = _super.call(this) || this;
+        _this.bounds = new Bounds(x, y, width, height);
+        return _this;
+    }
+    return PhysicalObject;
+}(BaseObject));
+export { PhysicalObject };
+var RectObject = /** @class */ (function (_super) {
+    __extends(RectObject, _super);
+    function RectObject(x, y, width, height) {
+        return _super.call(this, x, y, width, height) || this;
+    }
+    return RectObject;
+}(PhysicalObject));
+export { RectObject };
+var EllipseObject = /** @class */ (function () {
+    function EllipseObject() {
+    }
+    return EllipseObject;
+}());
+export { EllipseObject };
 //# sourceMappingURL=test.js.map

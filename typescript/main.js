@@ -1,14 +1,8 @@
 // declare function require(name: string);
 // const foo = require('./test.js');
-import { Util } from './test.js';
-var Main = /** @class */ (function () {
-    function Main() {
-    }
-    Main.main = function (args) {
-        console.log(Util.generateId());
-        console.log('Hello, world!');
-    };
-    return Main;
-}());
-Main.main(['']);
+import * as Lib from './test.js';
+console.log(Lib.Util.generateId());
+console.log('Hello, world!');
+var obj = new Lib.PhysicalObject(0, 0, 100, 100);
+console.log(obj);
 //# sourceMappingURL=main.js.map
